@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component jdk="19" jdk_type="JavaSDK">
+	<contentEntry url="file://$MODULE_DIR$"/>
+	<lib name="j3dcore" scope="RUNTIME"/>
+	<lib name="j3dexamples" scope="RUNTIME"/>
+	<lib name="j3dutils" scope="RUNTIME"/>
+	<lib name="java3d-javadocs-all" scope="RUNTIME"/>
+	<lib name="jogamp-fat" scope="RUNTIME"/>
+	<lib name="vecmath" scope="RUNTIME"/>
+</component>
