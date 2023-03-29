@@ -1,1 +1,62 @@
 #Project's file
+import java.util.Iterator;
+import org.jogamp.java3d.Behavior;
+import org.jogamp.java3d.Bounds;
+import org.jogamp.java3d.Transform3D;
+import org.jogamp.java3d.TransformGroup;
+import org.jogamp.java3d.WakeupCriterion;
+import org.jogamp.java3d.WakeupOnElapsedFrames;
+import org.jogamp.vecmath.Vector3d;
+
+public class PlaneCollision extends Behavior {
+
+    private TransformGroup plane1TG;
+    private TransformGroup plane2TG;
+    private boolean collided = false;
+
+    public PlaneCollision(TransformGroup plane1TG, TransformGroup plane2TG) {
+        this.plane1TG = plane1TG;
+        this.plane2TG = plane2TG;
+    }
+
+    @Override
+    public void initialize() {
+        this.wakeupOn(new WakeupOnElapsedFrames(0));
+    }
+
+
+    private void checkCollision() {
+        Bounds plane1Bounds = ((Shape3D) plane1TG.getChild(0)).getBounds();
+        Bounds plane2Bounds = ((Shape3D) plane2TG.getChild(0)).getBounds();
+
+        Transform3D plane1Transform = new Transform3D();
+        plane1TG.getTransform(plane1Transform);
+        Vector3d plane1Position = new Vector3d();
+        plane1Transform.get(plane1Position);
+
+        Transform3D plane2Transform = new Transform3D();
+        plane2TG.getTransform(plane2Transform);
+        Vector3d plane2Position = new Vector3d();
+        plane2Transform.get(plane2Position);
+
+        if (plane1Bounds.intersect(plane2Bounds)) {
+            if (plane1Position.distance(plane2Position) < 10.0) {
+                collided = true;
+            } else {
+                collided = false;
+            }
+        } else {
+            collided = false;
+        }
+    }
+
+    public boolean isCollided() {
+        return collided;
+    }
+
+    @Override
+    public void processStimulus(Iterator<WakeupCriterion> arg0) {
+        // TODO Auto-generated method stub
+
+    }
+}
