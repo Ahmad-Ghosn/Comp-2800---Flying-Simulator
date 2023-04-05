@@ -74,3 +74,19 @@ class Temp_Box extends Import_Plane {
 	}
 }
 
+class Temp_Ground extends Import_Plane {
+	public Temp_Ground(){
+		Transform3D translater = new Transform3D();
+		translater.setTranslation(new Vector3d(0.0d, -2.0d, 0.0d));
+		objTG = new TransformGroup(translater);
+		objTG.addChild(create_object());
+	}
+	
+	protected Node create_object(){
+		return new Box(150.0f, 0.3f, 150.0f, CommonsDS.obj_Appearance(CommonsDS.Green));
+	}
+	
+	public Node position_object(){
+		return objTG;
+	}
+}

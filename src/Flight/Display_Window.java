@@ -19,6 +19,7 @@ public class Display_Window extends JPanel implements MouseListener {
 	private static BranchGroup sceneBG = new BranchGroup();
 	
 	public static BranchGroup create_Scene_flight(){
+		//Create the Canvas and SU earlier (extrapolate this to a new f'n) to attach the behaviour to it
 		GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
 		canvas = new Canvas3D(config);
 		
@@ -32,11 +33,14 @@ public class Display_Window extends JPanel implements MouseListener {
 		
 		TransformGroup sceneTG = new TransformGroup();
 		TransformGroup planeTG = new TransformGroup();
+		planeTG.setName("Plane");
 		
 		planeTG.addChild(new Temp_Box().position_object());
 		Flight_Control_Behaviour control = new Flight_Control_Behaviour(planeTG, su.getViewingPlatform().getViewPlatformTransform());
-		control.setSchedulingBounds(new BoundingSphere(new Point3d(), 20.0));
+		control.setSchedulingBounds(new BoundingSphere(new Point3d(), 1000.0));
 		//sceneTG.addChild(control);
+		
+		sceneTG.addChild(new Temp_Ground().position_object());
 		
 		sceneTG.addChild(planeTG);
 		sceneBG.addChild(CommonsDS.add_Lights(CommonsDS.White, 1));
@@ -55,7 +59,7 @@ public class Display_Window extends JPanel implements MouseListener {
 		Point3d center = new Point3d(0, 0, 0);             // define the point where the eye looks at
 		Vector3d up = new Vector3d(0, 1, 0);               // define camera's up direction
 		Transform3D view_TM = new Transform3D();
-		view_TM.lookAt(new Point3d(0.0d, 1.0d, 4.0d), center, up);
+		view_TM.lookAt(new Point3d(0.0d, 1.0d, -4.0d), center, up);
 		view_TM.invert();
 		viewTransform.setTransform(view_TM);
 		
@@ -77,27 +81,17 @@ public class Display_Window extends JPanel implements MouseListener {
 	}
 	
 	@Override
-	public void mouseClicked(MouseEvent e) {
-	
-	}
+	public void mouseClicked(MouseEvent e) { }
 	
 	@Override
-	public void mousePressed(MouseEvent e) {
-	
-	}
+	public void mousePressed(MouseEvent e) { }
 	
 	@Override
-	public void mouseReleased(MouseEvent e) {
-	
-	}
+	public void mouseReleased(MouseEvent e) { }
 	
 	@Override
-	public void mouseEntered(MouseEvent e) {
-	
-	}
+	public void mouseEntered(MouseEvent e) { }
 	
 	@Override
-	public void mouseExited(MouseEvent e) {
-	
-	}
+	public void mouseExited(MouseEvent e) {	}
 }

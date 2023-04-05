@@ -20,7 +20,6 @@ public class Flight_Control_Behaviour extends Behavior implements KeyListener {
 	private WakeupCondition wake;
 	private Boolean listener;
 	private Flight_Control keyNavigator_target;
-	private Flight_Control keyNavigator_view;
 	private KeyEvent k_event;
 	private LinkedList eventq;
 
@@ -33,8 +32,7 @@ public class Flight_Control_Behaviour extends Behavior implements KeyListener {
 		this.wakeList = new WakeupCriterion[]{this.k_down, this.k_up, this.frame};
 		this.wake = new WakeupOr(this.wakeList);
 		this.listener = false;
-		this.keyNavigator_target = new Flight_Control(target);
-		this.keyNavigator_view = new Flight_Control(view);
+		this.keyNavigator_target = new Flight_Control(target, view);
 	}
 	
 	public void initialize() {
@@ -54,51 +52,53 @@ public class Flight_Control_Behaviour extends Behavior implements KeyListener {
 		boolean sawFrame = false;
 		
 		while(true){
-			while (criteria.hasNext()){
+			while (criteria.hasNext()){	//Loop across the iterator of all wakeup events
 				WakeupCriterion event = criteria.next();
 				if (event instanceof WakeupOnAWTEvent){
 					WakeupOnAWTEvent event_AWT = (WakeupOnAWTEvent) event;
 					AWTEvent[] events = event_AWT.getAWTEvent();
 					this.processAWTEvent(events);
 				} else if (event instanceof WakeupOnElapsedFrames && this.k_event != null) {
-					sawFrame = true;
+					sawFrame = true;	//Update once per frame
 				} else if (event instanceof WakeupOnBehaviorPost) {
 					while(true) {
-						synchronized (this.eventq) {
+						synchronized (this.eventq) { 	//Use a thread to read in key events and not back them up
 							if(this.eventq.isEmpty()) {
 								break;
 							}
-							this.k_event = (KeyEvent) this.eventq.remove(0);
+							this.k_event = (KeyEvent) this.eventq.remove(0);	//Pull the bottom event off
+								//if it's a key press or key release event, process it
 							if(this.k_event.getID() == 401 || this.k_event.getID() == 402) {
-								System.out.println("Keypress");
 								this.keyNavigator_target.processKeyEvent(this.k_event);
-								this.keyNavigator_view.processKeyEvent(this.k_event);
 							}
 						}
 					}
 				}
 			}
-			if(sawFrame){
-				this.keyNavigator_target.processKeyEvent(this.k_event);
-				this.keyNavigator_view.processKeyEvent(this.k_event);
+			if(sawFrame){	//If a frame has passed since last update, update position
+				this.keyNavigator_target.integrateTransformChanges();
 			}
 			this.wakeupOn(wake);
 			return;
 		}
 	}
 	
+	
+	//When the behaviour is fired, make sure it was a key pressed or key released event from the Posts
 	private void processAWTEvent(AWTEvent[] events){
 		for(int loop = 0; loop < events.length; ++loop) {
 			if (events[loop] instanceof KeyEvent) {
 				this.k_event = (KeyEvent)events[loop];
 				if (this.k_event.getID() == 401 || this.k_event.getID() == 402) {
+					//System.out.println("AWTEvent");	//Temp
 					this.keyNavigator_target.processKeyEvent(this.k_event);
-					this.keyNavigator_view.processKeyEvent(this.k_event);
 				}
 			}
 		}
 	}
 	
+	
+	//Handle keypresses
 	@Override
 	public void keyPressed(KeyEvent e) {
 		synchronized(this.eventq) {
