@@ -25,11 +25,13 @@ public class Display_Window extends JPanel implements MouseListener {
 		
 		su = new SimpleUniverse(canvas);    // create a SimpleUniverse
 		
+		/*
 		Background background = new Background();
 		background.setImage(new TextureLoader("textures/background-HillyField.jpg",null).getImage());
 		background.setImageScaleMode(Background.SCALE_FIT_MAX);
 		background.setApplicationBounds(new BoundingSphere(new Point3d(0.0, 0.0, 0.0), Double.MAX_VALUE));
 		background.setColor(CommonsDS.Grey);
+		 */
 		
 		TransformGroup sceneTG = new TransformGroup();
 		TransformGroup planeTG = new TransformGroup();
@@ -38,14 +40,13 @@ public class Display_Window extends JPanel implements MouseListener {
 		planeTG.addChild(new Temp_Box().position_object());
 		Flight_Control_Behaviour control = new Flight_Control_Behaviour(planeTG, su.getViewingPlatform().getViewPlatformTransform());
 		control.setSchedulingBounds(new BoundingSphere(new Point3d(), 1000.0));
-		//sceneTG.addChild(control);
 		
 		sceneTG.addChild(new Temp_Ground().position_object());
 		
 		sceneTG.addChild(planeTG);
 		sceneBG.addChild(CommonsDS.add_Lights(CommonsDS.White, 1));
 		sceneBG.addChild(control);
-		sceneBG.addChild(background);
+		//sceneBG.addChild(background);
 		sceneBG.addChild(sceneTG);
 		
 		return sceneBG;
@@ -59,18 +60,16 @@ public class Display_Window extends JPanel implements MouseListener {
 		Point3d center = new Point3d(0, 0, 0);             // define the point where the eye looks at
 		Vector3d up = new Vector3d(0, 1, 0);               // define camera's up direction
 		Transform3D view_TM = new Transform3D();
-		view_TM.lookAt(new Point3d(0.0d, 1.0d, -4.0d), center, up);
+		view_TM.lookAt(new Point3d(0.0d, 1.5d, -5.0d), center, up);
 		view_TM.invert();
 		viewTransform.setTransform(view_TM);
-		
-		//sceneBG.addChild(CommonsDS.key_Navigation(su));     // allow key navigation
 		
 		sceneBG.compile();                                  // optimize the BranchGroup
 		su.addBranchGraph(sceneBG);                         // attach the scene to SimpleUniverse
 		
 		setLayout(new BorderLayout());
 		add("Center", canvas);
-		frame.setSize(800, 800);                           // set the size of the JFrame
+		frame.setSize(800, 800);                       // set the size of the JFrame
 		frame.setVisible(true);
 	}
 	

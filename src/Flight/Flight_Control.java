@@ -1,9 +1,18 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
-
 package Flight;
+
+/*
+ * This is the behaviour dedicated to processing keypresses and transforming the relevant objects.
+ * Up Arrow -- Throttle up
+ * Down Arrow -- Throttle down
+ * A -- Yaw left
+ * D -- Yaw right
+ * W -- Pitch down
+ * S -- Pitch up
+ * Q -- Roll left
+ * E -- Roll right
+ *
+ * Dalyn Stephens - COMP2800 Final Project
+ */
 
 import java.awt.event.KeyEvent;
 import org.jogamp.java3d.Transform3D;
@@ -146,6 +155,7 @@ public class Flight_Control {
 		
 		//apply change in position to current position
 		this.dv.scale(deltaTime, this.a);	//Scale dv by a and how much time has passed (get deltaV)
+		//Temporary, while there isn't any collision set up prevents the 'plane' from falling through the ground
 		if (this.vpPos.y + dv.y < 0.0d){
 			dv.y = 0.0d;
 		}
@@ -212,9 +222,11 @@ public class Flight_Control {
 			this.curSpeed = 0.0d;
 		}
 		
+		//Set up camera position
 		Transform3D offset = new Transform3D();
 		Vector3d up = new Vector3d(0, 1, 0);
-		Point3d camLoc = new Point3d(0.0d, 1.5d, 6.0d);
+		Point3d camLoc = new Point3d(0.0d, 1.5d, 5.0d);
+		//Use the existing matrix to get the relative 'up' and camera offset locations
 		this.mat.transform(camLoc);
 		this.mat.transform(up);
 		offset.lookAt(
@@ -224,6 +236,7 @@ public class Flight_Control {
 		);
 		offset.invert();
 		
+		//Apply the updated transform to the group.
 		this.vpTrans.set(this.vpQuat, this.vpPos, 1.0d);
 		this.targetTG.setTransform(this.vpTrans);
 		this.followTG.setTransform(offset);

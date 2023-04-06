@@ -1,7 +1,20 @@
 package Flight;
 
+/*
+* This is the behaviour dedicated to registering keypresses towards flying the plane
+* Up Arrow -- Throttle up
+* Down Arrow -- Throttle down
+* A -- Yaw left
+* D -- Yaw right
+* W -- Pitch down
+* S -- Pitch up
+* Q -- Roll left
+* E -- Roll right
+*
+* Dalyn Stephens - COMP2800 Final Project
+*/
+
 import org.jogamp.java3d.*;
-import org.jogamp.java3d.utils.behaviors.keyboard.KeyNavigator;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -10,10 +23,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 public class Flight_Control_Behaviour extends Behavior implements KeyListener {
-	TransformGroup target;
-	Transform3D transform;
-	WakeupOnAWTEvent trigger;
-	
 	private WakeupCriterion k_down;
 	private WakeupCriterion k_up;
 	private WakeupOnElapsedFrames frame;
