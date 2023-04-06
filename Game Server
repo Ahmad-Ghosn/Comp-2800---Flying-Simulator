@@ -1,0 +1,172 @@
+//This is the Server
+
+import java.io.*;
+import java.net.*;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+public class GameServer {
+	private ServerSocket server;
+	private int numPlayers;
+	private int maxPlayers;
+	
+	private Socket p1s;
+	private Socket p2s;
+	
+	private ReadFromClient p1ReadRunnable;
+	private ReadFromClient p2ReadRunnable;
+	
+	private WriteToClient p1WriteRunnable;
+	private WriteToClient p2WriteRunnable;
+	
+	private Double p1x, p1y, p1z, p2x, p2y, p2z;
+
+	
+	public GameServer() {
+		System.out.println("====GameServer====");
+		numPlayers = 0;
+		maxPlayers = 2;
+		
+		p1x = 0.0;
+		p1y = 0.0;
+		p1z = 0.0;
+		
+		p2x = 0.0;
+		p2y = 0.0;
+		p2z = 0.0;
+		
+		try {
+			server = new ServerSocket(54321);
+		}
+		catch(IOException e) {
+			System.out.println("IOException from constructor");
+		}
+	}
+	
+	public void Connect() {
+		try {
+			System.out.println("Waiting to Connect");
+			
+			while(numPlayers < maxPlayers) {		//Connecting a Player to the Server
+				Socket s = server.accept();
+				DataInputStream in = new DataInputStream(s.getInputStream());
+				DataOutputStream out = new DataOutputStream(s.getOutputStream());
+				
+				numPlayers ++;
+				out.writeInt(numPlayers);		//Sends the Player number to the player
+				System.out.println("Player #" + numPlayers + " has connected.");
+				
+				ReadFromClient rfc = new ReadFromClient(numPlayers, in);
+				WriteToClient wtc = new WriteToClient(numPlayers, out);
+				
+				if(numPlayers == 1) {
+					p1s = s;
+					p1ReadRunnable = rfc;
+					p1WriteRunnable = wtc;
+					
+					Thread readThread1 = new Thread(p1ReadRunnable);
+					readThread1.start();
+					
+					Thread writeThread1 = new Thread(p1WriteRunnable);
+					writeThread1.start();
+				}
+				else {						//If you want to increase the maxPlayers, add new if Statements
+					p2s = s;
+					p2ReadRunnable = rfc;
+					p2WriteRunnable = wtc;
+					
+					Thread readThread1 = new Thread(p1ReadRunnable);
+					Thread readThread2 = new Thread(p2ReadRunnable);
+					readThread1.start();
+					readThread2.start();
+					
+					Thread writeThread1 = new Thread(p1WriteRunnable);
+					Thread writeThread2 = new Thread(p2WriteRunnable);
+					writeThread1.start();
+					writeThread2.start();
+				}
+
+			}
+			System.out.println("Max number of players has been reached.");
+
+		}
+		catch(IOException e) {
+			System.out.println("IOException from Connect()");
+		}
+	}
+	
+	private class ReadFromClient implements Runnable {
+		private int playerID;
+		private DataInputStream dataIn;
+		
+		public ReadFromClient(int pid, DataInputStream in) {
+			playerID = pid;
+			dataIn = in;
+		}
+		
+		public void run() {
+			try {
+				while(true) {
+					if(playerID == 1) {
+						p1x = dataIn.readDouble();
+						p1y = dataIn.readDouble();
+						p1z = dataIn.readDouble();
+					}
+					else {
+						p2x = dataIn.readDouble();
+						p2y = dataIn.readDouble();
+						p2z = dataIn.readDouble();
+					}
+				}
+			}
+			catch(IOException e) {
+				System.out.println("IOException from RFC run()");
+			}
+		}
+	}
+	
+	private class WriteToClient implements Runnable {
+		private int playerID;
+		private DataOutputStream dataOut;
+		
+		public WriteToClient(int pid, DataOutputStream out) {
+			playerID = pid;
+			dataOut = out;
+		}
+		
+		public void run() {
+			try {
+				while(true) {
+					if(playerID == 1) {
+						dataOut.writeDouble(p2x);
+						dataOut.writeDouble(p2y);
+						dataOut.writeDouble(p2z);
+						dataOut.flush();
+					}
+					else {
+						dataOut.writeDouble(p1x);
+						dataOut.writeDouble(p1y);
+						dataOut.writeDouble(p1z);
+						dataOut.flush();
+					}
+					
+					try {
+						Thread.sleep(25);
+					}
+					catch(InterruptedException e) {
+						System.out.println("InterruptedException from WTC run()");
+					}
+				}
+			}
+			catch(IOException e) {
+				System.out.println("IOException from WTC run()");
+			}
+		}
+	}
+	
+	public static void main(String[] args) {
+		GameServer gs = new GameServer();
+		gs.Connect();
+	}
+}
