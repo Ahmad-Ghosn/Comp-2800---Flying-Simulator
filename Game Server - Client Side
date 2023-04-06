@@ -1,0 +1,116 @@
+//This code is an exapmple of What should be added to the game file
+//As such this code does not work
+
+//The code in between the comment line are neccessary and should not be touched
+
+
+class Game {		//This is the class inside the game, where you have the movement and player position
+	private Socket socket;
+	
+	private int playerID;
+	
+	private me;			//Your position
+	private p2;			//Player #2's position
+	
+	private ReadFromServer rfsRunnable;
+	private WriteToServer wtsRunnable;
+	
+	/*--------------------------------------------------------------------------------------------------------------*/
+	private void Connect_to_Server() {
+		try {
+			socket = new Socket("localhost", 54321);
+			DataInputStream in = new DataInputStream(socket.getInputStream());
+			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+			
+			playerID = in.readInt();
+			System.out.println("You are Player#" + playerID);
+			
+			rfsRunnable = new ReadFromServer(in);
+			wtsRunnable = new WriteToServer(out);
+		}
+		catch(IOException e) {
+			System.out.println("IOException from Connect_to_Server()");
+		}
+	}
+  
+  
+	/*--------------------------------------------------------------------------------------------------------------*/
+	
+	private void createPlayer() {			//This is an example. Does not work (This creates and positions the player object)
+		/*me = new Player at player position;
+		p2 = new Player at player position;*/
+	}
+  
+  
+	/*--------------------------------------------------------------------------------------------------------------*/
+	
+	private class ReadFromServer implements Runnable{
+		private DataInputStream dataIn;
+		
+		public ReadFromServer(DataInputStream in) {
+			dataIn = in;
+		}
+		
+		public void run() {
+			Thread readThread = new Thread(rfsRunnable);
+			Thread writeThread = new Thread(wtsRunnable);
+			readThread.start();
+			writeThread.start();
+			try {
+				while(true) {
+					if(p2 != null) {					//checks if p2 is created
+						p2.setX(dataIn.readDouble());
+						p2.setY(dataIn.readDouble());
+						p2.setZ(dataIn.readDouble());
+					}
+				}
+			}
+			catch(IOException e) {
+				System.out.println("IOException from RFS run()");
+			}
+		}
+	}
+	
+	private class WriteToServer implements Runnable{
+		private DataOutputStream dataOut;
+		
+		public WriteToServer(DataOutputStream out) {
+			dataOut = out;
+		}
+		
+		public void run() {
+			try {
+				while(true) {
+					if(me != null) {							//checks if the me object is created
+						dataOut.writeDouble(me.getX());			//sends my x value to the server
+						dataOut.writeDouble(me.getY());
+						dataOut.writeDouble(me.getZ());
+						dataOut.flush();
+					}
+					
+					try {
+						Thread.sleep(25);
+					}
+					catch(InterruptedException e) {
+						System.out.println("InteruptedException from WTS run()");
+
+					}
+				}
+			}
+			catch(IOException e) {
+				System.out.println("IOException from WTS run()");
+			}
+		}
+	}
+  
+  
+	/*--------------------------------------------------------------------------------------------------------------*/
+	
+	public static void main(String[] args) {
+		
+		Game.Connect_to_Server();			//connects to the Game Server;
+		
+		JFrame = new JFlrame("Player #" + playerID);
+
+	}
+}
