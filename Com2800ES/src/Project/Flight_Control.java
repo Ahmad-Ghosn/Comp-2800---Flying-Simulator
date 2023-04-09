@@ -133,7 +133,7 @@ public class Flight_Control {
 	}
 	
 	public void integrateTransformChanges() {
-		if (!joe.isCollided()) {
+		
 			this.targetTG.getTransform(this.vpTrans);
 			this.vpScale = this.vpTrans.get(this.vpQuat, this.vpPos);
 			double deltaTime = (double)this.getDeltaTime();
@@ -246,12 +246,7 @@ public class Flight_Control {
 			this.vpTrans.set(this.vpQuat, this.vpPos, 1.0d);
 			this.targetTG.setTransform(this.vpTrans);
 			this.followTG.setTransform(offset);
-		}
-		else {
-			resetVelocity();
-			vpTrans.setTranslation(new Vector3d(0,0,0));
-			this.targetTG.setTransform(vpTrans);
-		}
+		
 		}
 	
 	private void resetVelocity() {
