@@ -1,0 +1,1 @@
+ This project is about making a Java 3D-based flight simulator. Offering an immersive aviation experience, the simulator showcases advanced graphics and realistic physics simulations for an authentic and engaging user experience.
